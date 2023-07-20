@@ -102,13 +102,13 @@ int main()
 			}
 			if (event.type == sf::Event::KeyPressed)
 			{
-				if (event.key.code == sf::Keyboard::W)
+				if (event.key.code == sf::Keyboard::W && !gameOver)
 					wasd.wPressed = true;
-				if (event.key.code == sf::Keyboard::S)
+				if (event.key.code == sf::Keyboard::S && !gameOver)
 					wasd.sPressed = true;
-				if (event.key.code == sf::Keyboard::A)
+				if (event.key.code == sf::Keyboard::A && !gameOver)
 					wasd.aPressed = true;
-				if (event.key.code == sf::Keyboard::D)
+				if (event.key.code == sf::Keyboard::D && !gameOver)
 					wasd.dPressed = true;
 				if (event.key.code == sf::Keyboard::Escape)
 					window.close();
