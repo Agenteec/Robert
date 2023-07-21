@@ -20,11 +20,11 @@ public:
 	Player() :
 		hp(100.f),
 		maxHp(100.f),
-		speed(300.f),
+		speed(1000.f),
 		hitted(false), 
 		hitResetTimer(0.f), 
 		deathTimer(0.f),
-		cameraSpeed(0.8f)
+		cameraSpeed(1.8f)
 	{
 
 	}
@@ -42,6 +42,7 @@ public:
 
 	}
 };
+
 class Rocket : public PepsiEnemy
 {
 public:
@@ -74,6 +75,7 @@ public:
 
 
 };
+
 struct WASD
 {
 	WASD() :
@@ -91,16 +93,16 @@ struct WASD
 	bool dPressed;
 };
 
-void moveSprite(const WASD &wasd, sf::Sprite &sprite, const float &deltaTime)
+void moveSprite(const WASD &wasd, sf::Sprite &sprite, const float &deltaTime, const float& speed)
 {
 	if (wasd.wPressed)
-		sprite.move(0, -300.f * deltaTime);
+		sprite.move(0, -1.f * deltaTime * speed);
 	if (wasd.sPressed)
-		sprite.move(0, 300.f * deltaTime);
+		sprite.move(0, 1.f * deltaTime * speed);
 	if (wasd.aPressed)
-		sprite.move(-300.f * deltaTime, 0);
+		sprite.move(-1.f * deltaTime * speed, 0);
 	if (wasd.dPressed)
-		sprite.move(300.f * deltaTime, 0);
+		sprite.move(1.f * deltaTime * speed, 0);
 }
 // Функция для нормализации вектора
 sf::Vector2f normalize(const sf::Vector2f& vector) {
@@ -110,6 +112,7 @@ sf::Vector2f normalize(const sf::Vector2f& vector) {
 	}
 	return vector;
 }
+
 void setHpText(sf::Text& text, const float& hp, const float& maxHp)
 {
 	if (hp < 0)
@@ -120,6 +123,7 @@ void setHpText(sf::Text& text, const float& hp, const float& maxHp)
 	text.setFillColor(sf::Color(255 -col, col, 0));
 	text.setString("HP: " + to_string(static_cast<int>(hp)));
 }
+
 int main()
 {
 
@@ -175,6 +179,33 @@ int main()
 	groundBox.SetTwoSided(b2Vec2(100.0f, 0.0f), b2Vec2(100.0f, 50.0f));
 	groundBody->CreateFixture(&groundBox, 0.0f);
 #pragma endregion
+
+	#pragma region environment
+	sf::Texture cobblestoneTexture;
+	cobblestoneTexture.loadFromFile("Resources/png/environment/paving 6.png");
+	#pragma endregion
+	vector<sf::Sprite> background;
+	bool b = true;
+	for (float i = 0;b ;i += 1.f )
+	{
+		for (float j = 0; ;j = j + 1.f)
+		{
+			sf::Sprite temp(cobblestoneTexture);
+			temp.setPosition(-100.f * SCALE + j * temp.getLocalBounds().width, 0 + temp.getLocalBounds().height * i);
+			background.push_back(temp);
+			if (i * temp.getLocalBounds().height >= 50.f * SCALE)
+			{
+				b = false;
+				break;
+			}
+			if (j * temp.getLocalBounds().width >= 100.f * SCALE* 2.f)
+			{
+				break;
+			}
+		}
+
+	}
+
 	sf::Font font;
 	font.loadFromFile("Resources/fonts/impact.ttf");
 	sf::Text hpText;
@@ -188,7 +219,7 @@ int main()
 
 	default_random_engine randomEngine;
 
-	uniform_int_distribution<int> spriteDistX(-100, 1124);
+	uniform_int_distribution<int> spriteDistX(-100.f * SCALE, SCALE * 100.f);
 
 	WASD wasd;
 	sf::RenderWindow window(sf::VideoMode(1024, 720), L"вікно");
@@ -264,7 +295,7 @@ int main()
 		}
 
 
-		for (size_t i = pepsis.size(); 0&&i < 30 && enemySpawnTimer >= 0.6f && !gameOver; i++)
+		for (size_t i = pepsis.size(); i < 5000 && enemySpawnTimer >= 0.2f && !gameOver; i++)
 		{
 			PepsiEnemy pepsi;
 			pepsi.setTexture(texturePepsi);
@@ -290,7 +321,7 @@ int main()
 
 		enemySpawnTimer += deltaTime;
 
-		moveSprite(wasd, dog, deltaTime);
+		moveSprite(wasd, dog, deltaTime,dog.speed);
 
 		for (int i = 0; i < pepsis.size(); i++)
 		{
@@ -346,12 +377,13 @@ int main()
 		rocketPepsi.update();
 		// Обновление мира Box2D
 		world->Step(deltaTime*0.1f, 6, 2);
-#pragma region Camera
+		#pragma region Camera
 		// Вычисляем новую позицию камеры с интерполяцией
 		sf::Vector2f targetPosition = dog.getPosition();
 		sf::Vector2f currentPosition = view.getCenter();
 		sf::Vector2f newPosition = currentPosition + (targetPosition - currentPosition) * dog.cameraSpeed*deltaTime;
 
+		hpText.setPosition(view.getCenter().x - 470, view.getCenter().y+330);
 		view.setCenter(newPosition);
 		window.setView(view);
 #pragma endregion
@@ -359,7 +391,10 @@ int main()
 		
 		////////////
 		window.clear(sf::Color(255, 255, 255));
-		
+		for (const auto& sprite: background)
+		{
+			window.draw(sprite);
+		}
 		window.draw(dog);
 		#pragma region box2d
 		sf::RectangleShape rect1(sf::Vector2f(2.0f * SCALE, 2.0f * SCALE));
