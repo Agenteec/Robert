@@ -10,7 +10,7 @@
           "cacheVariables": {
             "CMAKE_C_COMPILER": "cl.exe",
             "CMAKE_CXX_COMPILER": "cl.exe",
-            "CMAKE_TOOLCHAIN_FILE": "C:/Users/struk/vcpkg/scripts/buildsystems/vcpkg.cmake"
+            "CMAKE_TOOLCHAIN_FILE": "C:/Users/Agenteec/vcpkg/scripts/buildsystems/vcpkg.cmake"
           },
             "condition": {
                 "type": "equals",
@@ -28,7 +28,7 @@
             },
           "cacheVariables": {
             "CMAKE_BUILD_TYPE": "Debug",
-            "CMAKE_TOOLCHAIN_FILE": "C:/Users/struk/vcpkg/scripts/buildsystems/vcpkg.cmake"
+            "CMAKE_TOOLCHAIN_FILE": "C:/Users/Agenteec/vcpkg/scripts/buildsystems/vcpkg.cmake"
           }
         },
         {
@@ -37,7 +37,7 @@
             "inherits": "x64-debug",
           "cacheVariables": {
             "CMAKE_BUILD_TYPE": "Release",
-            "CMAKE_TOOLCHAIN_FILE": "C:/Users/struk/vcpkg/scripts/buildsystems/vcpkg.cmake"
+            "CMAKE_TOOLCHAIN_FILE": "C:/Users/Agenteec/vcpkg/scripts/buildsystems/vcpkg.cmake"
           }
         },
         {
@@ -50,7 +50,7 @@
             },
           "cacheVariables": {
             "CMAKE_BUILD_TYPE": "Debug",
-            "CMAKE_TOOLCHAIN_FILE": "C:/Users/struk/vcpkg/scripts/buildsystems/vcpkg.cmake"
+            "CMAKE_TOOLCHAIN_FILE": "C:/Users/Agenteec/vcpkg/scripts/buildsystems/vcpkg.cmake"
           }
         },
         {
@@ -59,7 +59,7 @@
             "inherits": "x86-debug",
           "cacheVariables": {
             "CMAKE_BUILD_TYPE": "Release",
-            "CMAKE_TOOLCHAIN_FILE": "C:/Users/struk/vcpkg/scripts/buildsystems/vcpkg.cmake"
+            "CMAKE_TOOLCHAIN_FILE": "C:/Users/Agenteec/vcpkg/scripts/buildsystems/vcpkg.cmake"
           }
         },
         {

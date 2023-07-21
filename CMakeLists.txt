@@ -13,10 +13,24 @@ project ("Robert")
 
 find_package(SFML COMPONENTS system window graphics CONFIG REQUIRED)
 
+find_package(box2d CONFIG REQUIRED)
+
+
 # Добавьте источник в исполняемый файл этого проекта.
 add_executable (Robert "Robert.cpp" "Robert.h")
 
-target_link_libraries(Robert PRIVATE sfml-system sfml-network sfml-graphics sfml-window)
+target_link_libraries(Robert PRIVATE sfml-system sfml-network sfml-graphics sfml-window box2d::box2d)
+
+
+
+# Укажите директорию с файлами для копирования
+set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/Resources)
+
+# Укажите директорию, в которую нужно скопировать файлы
+set(DESTINATION_DIR ${CMAKE_BINARY_DIR})
+
+# Копируйте файлы
+file(COPY ${SOURCE_DIR} DESTINATION ${DESTINATION_DIR})
 
 #target_link_libraries(Robert PRIVATE )
 if (CMAKE_VERSION VERSION_GREATER 3.12)

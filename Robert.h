@@ -5,9 +5,14 @@
 
 #include <iostream>
 #include <SFML/graphics.hpp>
+#include <box2d/box2d.h>
 #include <vector>
 #include <random>
 #include <cmath>
+
+// Масштаб: сколько пикселей в одном метре Box2D (в данном примере 100 пикселей = 1 метр)
+const float SCALE = 100.0f;
+
 
 // Управляющие последовательности ANSI для цветов
 #define ANSI_COLOR_RED     "\x1b[31m"
