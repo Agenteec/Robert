@@ -24,7 +24,7 @@ include_directories(${SFML_INCLUDE_DIR})
 include_directories(${Box2D_INCLUDE_DIR})
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-include_directories(/usr/include)
+#include_directories("/usr/include")
 endif()
 # Добавьте источник в исполняемый файл этого проекта.
 add_executable (Robert "Robert.cpp" "Robert.h")

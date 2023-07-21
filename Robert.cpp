@@ -8,6 +8,8 @@ using namespace std;
 class Player : public sf::Sprite
 {
 public:
+	// Скорость следования камеры за персонажем
+	float cameraSpeed;
 	float hp;
 	float maxHp;
 	float speed;
@@ -21,7 +23,8 @@ public:
 		speed(300.f),
 		hitted(false), 
 		hitResetTimer(0.f), 
-		deathTimer(0.f)
+		deathTimer(0.f),
+		cameraSpeed(0.8f)
 	{
 
 	}
@@ -212,6 +215,8 @@ int main()
 	rocketPepsi.setScale(0.15f, 0.15f);
 	rocketPepsi.initBody(world, sf::Vector2f(1000, 500), sf::Vector2f(rocketPepsi.getLocalBounds().width * rocketPepsi.getScale().x, rocketPepsi.getLocalBounds().height * rocketPepsi.getScale().y));
 	printf("%f", rocketPepsi.getLocalBounds().height);
+	// Создаем вид (камеру) для окна
+	sf::View view = window.getDefaultView();
 	while (window.isOpen()) 
 	{
 		float deltaTime = clock.restart().asSeconds();
@@ -259,7 +264,7 @@ int main()
 		}
 
 
-		for (size_t i = pepsis.size(); i < 30 && enemySpawnTimer >= 0.6f && !gameOver; i++)
+		for (size_t i = pepsis.size(); 0&&i < 30 && enemySpawnTimer >= 0.6f && !gameOver; i++)
 		{
 			PepsiEnemy pepsi;
 			pepsi.setTexture(texturePepsi);
@@ -305,7 +310,7 @@ int main()
 			}
 		}
 		b2Vec2 bodyPos = rocketPepsi.body->GetPosition();
-		cout << bodyPos.x << " " << bodyPos.y << endl;
+		//cout << bodyPos.x << " " << bodyPos.y << endl;
 		sf::Vector2f direction = normalize(sf::Vector2f(dog.getPosition().x - bodyPos.x*SCALE, dog.getPosition().y - bodyPos.y* SCALE));
 		rocketPepsi.body->ApplyLinearImpulseToCenter(b2Vec2(direction.x*deltaTime*100.f, direction.y*deltaTime*100.f),true);
 		float rotation = std::atan2(direction.y, direction.x);
@@ -337,9 +342,20 @@ int main()
 
 			gameOver = true;
 		}
-		// Обновление мира Box2D (вызывается перед рендерингом)
+
 		rocketPepsi.update();
+		// Обновление мира Box2D
 		world->Step(deltaTime*0.1f, 6, 2);
+#pragma region Camera
+		// Вычисляем новую позицию камеры с интерполяцией
+		sf::Vector2f targetPosition = dog.getPosition();
+		sf::Vector2f currentPosition = view.getCenter();
+		sf::Vector2f newPosition = currentPosition + (targetPosition - currentPosition) * dog.cameraSpeed*deltaTime;
+
+		view.setCenter(newPosition);
+		window.setView(view);
+#pragma endregion
+
 		
 		////////////
 		window.clear(sf::Color(255, 255, 255));
