@@ -20,7 +20,7 @@ public:
 	Player() :
 		hp(100.f),
 		maxHp(100.f),
-		speed(1000.f),
+		speed(950.f),
 		hitted(false), 
 		hitResetTimer(0.f), 
 		deathTimer(0.f),
@@ -126,7 +126,8 @@ void setHpText(sf::Text& text, const float& hp, const float& maxHp)
 
 int main()
 {
-
+	
+	float newDirectionTime = 0.f;
 #pragma region b2d
 	// Создание мира Box2D без гравитации
 	b2Vec2 gravity(0.0f, 9.8f-9.8f);
@@ -239,7 +240,7 @@ int main()
 	dog.setPosition(window.getSize().x / 2, window.getSize().y / 2);
 
 	vector<PepsiEnemy> pepsis;
-	sf::Clock clock;
+	
 	setHpText(hpText,dog.hp,dog.maxHp);
 	Rocket rocketPepsi;
 	rocketPepsi.setTexture(texturePepsi);
@@ -248,6 +249,8 @@ int main()
 	printf("%f", rocketPepsi.getLocalBounds().height);
 	// Создаем вид (камеру) для окна
 	sf::View view = window.getDefaultView();
+	system("pause");
+	sf::Clock clock;
 	while (window.isOpen()) 
 	{
 		float deltaTime = clock.restart().asSeconds();
@@ -339,6 +342,21 @@ int main()
 				setHpText(hpText, dog.hp, dog.maxHp);
 				pepsis.erase(pepsis.begin() + i);
 			}
+			if (newDirectionTime >= 2.f)
+			{
+				sf::Vector2f direction = normalize(dog.getPosition() - pepsis[i].getPosition());
+
+				float rotation = std::atan2(direction.y, direction.x) * 180.f / 3.1415f;
+				pepsis[i].setRotation(rotation + 90.f);
+
+				pepsis[i].direction = direction;
+				
+			}
+		}
+		newDirectionTime += deltaTime;
+		if (newDirectionTime >= 2.1f)
+		{
+			newDirectionTime = 0.f;
 		}
 		b2Vec2 bodyPos = rocketPepsi.body->GetPosition();
 		//cout << bodyPos.x << " " << bodyPos.y << endl;
