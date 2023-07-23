@@ -1,6 +1,6 @@
 ﻿
 #include "Robert.h"
-
+#include <stdint.h>
 using namespace std;
 
 
@@ -24,7 +24,7 @@ public:
 		hitted(false), 
 		hitResetTimer(0.f), 
 		deathTimer(0.f),
-		cameraSpeed(1.8f)
+		cameraSpeed(2.8f)
 	{
 
 	}
@@ -106,7 +106,7 @@ void moveSprite(const WASD &wasd, sf::Sprite &sprite, const float &deltaTime, co
 }
 // Функция для нормализации вектора
 sf::Vector2f normalize(const sf::Vector2f& vector) {
-	float length = std::sqrt(vector.x * vector.x + vector.y * vector.y);
+	float length = sqrt((vector.x * vector.x + vector.y * vector.y));
 	if (length != 0.0f) {
 		return sf::Vector2f(vector.x / length, vector.y / length);
 	}
@@ -128,6 +128,8 @@ int main()
 {
 	
 	float newDirectionTime = 0.f;
+
+
 #pragma region b2d
 	// Создание мира Box2D без гравитации
 	b2Vec2 gravity(0.0f, 9.8f-9.8f);
@@ -246,10 +248,16 @@ int main()
 	rocketPepsi.setTexture(texturePepsi);
 	rocketPepsi.setScale(0.15f, 0.15f);
 	rocketPepsi.initBody(world, sf::Vector2f(1000, 500), sf::Vector2f(rocketPepsi.getLocalBounds().width * rocketPepsi.getScale().x, rocketPepsi.getLocalBounds().height * rocketPepsi.getScale().y));
-	printf("%f", rocketPepsi.getLocalBounds().height);
+	//printf("%f", rocketPepsi.getLocalBounds().height);
 	// Создаем вид (камеру) для окна
 	sf::View view = window.getDefaultView();
-	system("pause");
+	float elapsedTime = 0.f;
+	int frames = 0;
+	sf::Text fpsText;
+	fpsText.setFont(font);
+	fpsText.setCharacterSize(24);
+	fpsText.setFillColor(sf::Color::Green);
+	fpsText.setPosition(10, 10);
 	sf::Clock clock;
 	while (window.isOpen()) 
 	{
@@ -298,7 +306,7 @@ int main()
 		}
 
 
-		for (size_t i = pepsis.size(); i < 5000 && enemySpawnTimer >= 0.2f && !gameOver; i++)
+		for (size_t i = pepsis.size(); i < 5000 && enemySpawnTimer >= 0.01f && !gameOver; i++)
 		{
 			PepsiEnemy pepsi;
 			pepsi.setTexture(texturePepsi);
@@ -326,32 +334,32 @@ int main()
 
 		moveSprite(wasd, dog, deltaTime,dog.speed);
 
-		for (int i = 0; i < pepsis.size(); i++)
-		{
-			pepsis[i].move(pepsis[i].direction * pepsis[i].speed * deltaTime);
+		for (auto it = pepsis.begin(); it != pepsis.end();) {
+			it->move(it->direction * it->speed * deltaTime);
 
-			if (dog.getGlobalBounds().intersects(pepsis[i].getGlobalBounds()))
-			{
+			if (dog.getGlobalBounds().intersects(it->getGlobalBounds())) {
 				dog.hitted = true;
 				dog.setColor(sf::Color::Red);
-				dog.hp -= pepsis[i].damage;
-				if (dog.hp>dog.maxHp)
-				{
+				dog.hp -= it->damage;
+				if (dog.hp > dog.maxHp) {
 					dog.hp = dog.maxHp;
 				}
 				setHpText(hpText, dog.hp, dog.maxHp);
-				pepsis.erase(pepsis.begin() + i);
+				it = pepsis.erase(it);
+				continue;
 			}
-			if (newDirectionTime >= 2.f)
-			{
-				sf::Vector2f direction = normalize(dog.getPosition() - pepsis[i].getPosition());
+
+			if (newDirectionTime >= 2.f) {
+				sf::Vector2f direction = normalize(dog.getPosition() - it->getPosition());
 
 				float rotation = std::atan2(direction.y, direction.x) * 180.f / 3.1415f;
-				pepsis[i].setRotation(rotation + 90.f);
+				it->setRotation(rotation + 90.f);
 
-				pepsis[i].direction = direction;
-				
+				it->direction = direction;
+
 			}
+
+			++it;
 		}
 		newDirectionTime += deltaTime;
 		if (newDirectionTime >= 2.1f)
@@ -402,10 +410,19 @@ int main()
 		sf::Vector2f newPosition = currentPosition + (targetPosition - currentPosition) * dog.cameraSpeed*deltaTime;
 
 		hpText.setPosition(view.getCenter().x - 470, view.getCenter().y+330);
+		fpsText.setPosition(view.getCenter().x + 400, view.getCenter().y - 350);
 		view.setCenter(newPosition);
 		window.setView(view);
-#pragma endregion
-
+		#pragma endregion
+		elapsedTime += deltaTime;
+		frames++;
+		if (elapsedTime >= 1.0f) {
+			float fps = frames / elapsedTime;
+			fpsText.setString("FPS: " + std::to_string(static_cast<int>(fps)));
+			frames = 0;
+			elapsedTime = 0;
+			
+		}
 		
 		////////////
 		window.clear(sf::Color(255, 255, 255));
@@ -448,8 +465,9 @@ int main()
 		window.draw(wallShape4);
 		#pragma endregion
 		window.draw(rocketPepsi);
-		//window.draw(rect1);
-		//window.draw(rect2);
+		window.draw(rect1);
+		window.draw(rect2);
+		window.draw(fpsText);
 		window.draw(hpText);
 		for (auto& pepsi : pepsis)
 		{
